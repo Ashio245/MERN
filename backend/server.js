@@ -1,16 +1,8 @@
-import http from 'http'
+import express from 'express'
+import { postsRoutes } from './routes/postsroutes.js'
 
-http.createServer((req, res)=>{
+const app = express()
 
-res.writeHead(400,  {"Content-Type": "text/html"})
+app.use('/api/posts', postsRoutes)
 
-res.write('req.url')
-
-
-if (req.method = "POST"){
-    res.write('post request')
-}
-
-res.end()
-
-}).listen(4000, 'localhost')
+app.listen(4000, 'localhost', ()=>console.log('listening to port 4000'))
