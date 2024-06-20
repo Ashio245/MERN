@@ -1,5 +1,6 @@
 import mongoose from "mongoose"
 import Post from "../models/PostModel.js"
+import User from "../models/UserModel.js"
 //*************************************Get all post*************************************************** */
 const getPosts = async(req, res)=>{
     try {
@@ -9,6 +10,22 @@ const getPosts = async(req, res)=>{
         res.status(500).json({error : error.message})
     }
 }
+
+
+//*************************************Get user post*************************************************** */
+const getUserPosts = async(req, res)=>{
+//Grab the authenticated user from request body
+const userPosts = await User.findById(req.user._id)
+
+
+    try {
+        const posts = await Post.find({user: user._id})
+        res.status(200).json({userPosts})
+    } catch (error) {
+        res.status(500).json({error : error.message})
+    }
+}
+
 
 //*************************************Create new post*************************************************** */
 const addPost = async (req, res)=>{
@@ -20,8 +37,11 @@ if(!title || !body){
     return  res.status(400).json({error : 'All fields are required'})
 }
 
+//Grab the authenticated user from request body
+const user = await User.findById(req.user._id)
+
 try{
-    const post = await Post.create({title, body})
+    const post = await Post.create({user: user._id, title, body})
 
     res.status(200).json({success : 'Post Created', post})
 } catch(error){
@@ -43,6 +63,14 @@ const post = await Post.findById(req.params.id)
 if (!post) {
     return  res.status(400).json({error : 'Post not found'})
 }
+
+//Check the user owns the post
+const user = await User.findById(req.user._id)
+
+if (!post.user.equals(user._id)) {
+    return  res.status(401).json({error : 'not authorized'})
+}
+
 
 try {
     await post.deleteOne()
@@ -73,6 +101,14 @@ if (!post) {
     return  res.status(400).json({error : 'Post not found'})
 }
 
+//Check the user owns the post
+const user = await User.findById(req.user._id)
+
+if (!post.user.equals(user._id)) {
+    return  res.status(401).json({error : 'not authorized'})
+}
+
+
 try {
     await post.updateOne({title, body})
     res.status(200).json({success : 'Post was Updated'})
@@ -81,4 +117,4 @@ try {
 }
 }
 
-export {getPosts, addPost, deletePost, updatePost}
+export {getPosts,getUserPosts, addPost, deletePost, updatePost}

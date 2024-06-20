@@ -9,7 +9,7 @@ router.post('/', registerUser)
 
 //Login User route
 
-router.post("Login", loginUser)
+router.post("/login", loginUser)
 
 export  {router as usersRoutes}
 

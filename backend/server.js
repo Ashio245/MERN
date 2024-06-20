@@ -4,6 +4,7 @@ import { usersRoutes } from './routes/usersRoutes.js'
 import mongoose from 'mongoose'
 
 const app = express()
+app.use(express.json())
 
 app.use('/api/posts', postsRoutes)
 app.use('/api/users', usersRoutes)
